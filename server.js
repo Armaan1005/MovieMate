@@ -253,37 +253,52 @@ Do not include any explanation, just the title and year.`;
 
     console.log(`🤖 Asking Gemini for suggestion based on: "${prefs}"`);
 
-    // Using Gemini 2.0 Flash (latest, fastest model)
-    const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`;
+    // Using Gemini model - try experimental first, fallback to stable
+    let model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
+    
+    // Fallback to stable model if experimental not available
+    const stableModel = 'gemini-1.5-flash';
     
     console.log(`📡 Using model: ${model}`);
     
-    const geminiResponse = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 20,
-          topP: 0.8,
-          maxOutputTokens: 50,
-        }
-      })
-    });
+    const makeGeminiRequest = async (modelName) => {
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_KEY}`;
+      return await fetch(geminiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 20,
+            topP: 0.8,
+            maxOutputTokens: 50,
+          }
+        })
+      });
+    };
+    
+    let geminiResponse = await makeGeminiRequest(model);
+    
+    // If experimental model fails, try stable model
+    if (!geminiResponse.ok && model !== stableModel) {
+      console.log(`⚠️  Model ${model} failed, trying ${stableModel}...`);
+      model = stableModel;
+      geminiResponse = await makeGeminiRequest(model);
+    }
     
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
       console.error('❌ Gemini API error:', geminiResponse.status, errorText);
       return res.status(500).json({ 
-        error: `Gemini API error: ${geminiResponse.status}. Check your API key at https://ai.google.dev/`
+        error: `Gemini API error: ${geminiResponse.status}. Check your API key at https://ai.google.dev/`,
+        details: errorText
       });
     }
 
