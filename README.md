@@ -17,6 +17,9 @@ AI-powered movie discovery app with smart recommendations, trending content, and
 - ⭐ **Detailed Info** - View ratings, runtime, cast, plot, and awards
 - 📱 **Responsive Design** - Works perfectly on desktop, tablet, and mobile
 
+<img width="1903" height="1079" alt="image" src="https://github.com/user-attachments/assets/8a79d620-ab4e-4d9b-ad5e-8f3c1f62efb5" />
+
+
 ## 🚀 Quick Start
 
 ### Prerequisites
