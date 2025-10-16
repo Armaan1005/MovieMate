@@ -19,6 +19,9 @@ AI-powered movie discovery app with smart recommendations, trending content, and
 
 <img width="1903" height="1079" alt="image" src="https://github.com/user-attachments/assets/8a79d620-ab4e-4d9b-ad5e-8f3c1f62efb5" />
 
+<img width="1320" height="532" alt="Screenshot 2025-10-16 220835" src="https://github.com/user-attachments/assets/635d77d5-9e18-4fdf-a614-29336bcbb1c0" />
+
+
 
 ## 🚀 Quick Start
 
