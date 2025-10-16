@@ -353,7 +353,8 @@ Movie details: ${movieData.genre} | ${movieData.director} | ${movieData.plot}
 
 Provide a 2-3 sentence enthusiastic explanation of why this movie fits their preferences.`;
 
-    const explanationResponse = await fetch(geminiUrl, {
+    const explanationGeminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`;
+    const explanationResponse = await fetch(explanationGeminiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
