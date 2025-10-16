@@ -17,21 +17,6 @@ const PORT = process.env.PORT || 3000;
 const CACHE = new Map();
 const TTL = 1000 * 60 * 5; // 5 min
 
-// Rate limiting for Gemini API
-const geminiRateLimit = {
-  requests: [],
-  maxPerMinute: 10, // Conservative limit (free tier allows 15)
-  isLimited() {
-    const now = Date.now();
-    // Remove requests older than 1 minute
-    this.requests = this.requests.filter(time => now - time < 60000);
-    return this.requests.length >= this.maxPerMinute;
-  },
-  addRequest() {
-    this.requests.push(Date.now());
-  }
-};
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -249,15 +234,6 @@ app.post('/api/suggest', async (req, res) => {
       });
     }
 
-    // Check rate limit
-    if (geminiRateLimit.isLimited()) {
-      console.log('⚠️  Rate limit reached, please wait...');
-      return res.status(429).json({ 
-        error: 'Too many requests. Please wait a moment and try again.',
-        retryAfter: 60
-      });
-    }
-
     // Build a smart prompt for movie suggestions
     const movieList = sampleMovies?.length > 0 
       ? sampleMovies.map(m => `${m.title} (${m.release_date})`).join(', ')
@@ -328,9 +304,6 @@ Do not include any explanation, just the title and year.`;
 
     const geminiJson = await geminiResponse.json();
     console.log('🤖 Gemini response received');
-    
-    // Track successful request for rate limiting
-    geminiRateLimit.addRequest();
     
     // Extract the movie title from Gemini's response
     const movieTitleRaw = geminiJson?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
@@ -428,15 +401,6 @@ app.post('/api/filter', async (req, res) => {
       });
     }
 
-    // Check rate limit
-    if (geminiRateLimit.isLimited()) {
-      console.log('⚠️  Rate limit reached, please wait...');
-      return res.status(429).json({ 
-        error: 'Too many requests. Please wait a moment and try again.',
-        retryAfter: 60
-      });
-    }
-
     console.log(`🤖 Using AI to find best ${genre} movies (page ${page})...`);
 
     // Ask Gemini for top-rated modern movies in the genre
@@ -476,9 +440,6 @@ One movie per line. No explanations, just title and year.`;
     const geminiJson = await geminiResponse.json();
     const aiResponse = geminiJson?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
     console.log(`🤖 AI suggested movies:\n${aiResponse}`);
-    
-    // Track successful request for rate limiting
-    geminiRateLimit.addRequest();
     
     // Parse movie titles and years from AI response
     const movieLines = aiResponse.split('\n').filter(line => line.trim());
