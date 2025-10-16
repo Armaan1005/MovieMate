@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieMate - Movie Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 onclick="loadTrending()" style="cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><i class="fas fa-film"></i> MovieMate</h1>
+    <button class="toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+  </header>
+
+  <main class="container">
+    <div class="searchbar">
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Search movies..." 
+        autocomplete="off"
+      />
+      <button onclick="search()"><i class="fas fa-search"></i> Search</button>
+      <button onclick="showSuggestModal()"><i class="fas fa-magic"></i> Suggest</button>
+    </div>
+
+    <div class="controls">
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-weight: 600; font-size: 0.9rem;">Smart Filters:</span>
+        <button class="filter-btn" onclick="filterMovies('action')"><i class="fas fa-fist-raised"></i> Action</button>
+        <button class="filter-btn" onclick="filterMovies('comedy')"><i class="fas fa-laugh"></i> Comedy</button>
+        <button class="filter-btn" onclick="filterMovies('drama')"><i class="fas fa-theater-masks"></i> Drama</button>
+        <button class="filter-btn" onclick="filterMovies('horror')"><i class="fas fa-ghost"></i> Horror</button>
+        <button class="filter-btn" onclick="filterMovies('sci-fi')"><i class="fas fa-rocket"></i> Sci-Fi</button>
+        <button class="filter-btn" onclick="filterMovies('romance')"><i class="fas fa-heart"></i> Romance</button>
+        <button class="filter-btn" onclick="filterMovies('thriller')"><i class="fas fa-user-secret"></i> Thriller</button>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <div class="history" id="history"></div>
+      <button id="clearHistoryBtn" onclick="clearHistory()" style="display: none; padding: 0.4rem 0.8rem; background: var(--card); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: 500;" onmouseover="this.style.background='#ef4444'; this.style.color='white'; this.style.borderColor='#ef4444'" onmouseout="this.style.background='var(--card)'; this.style.color='var(--text)'; this.style.borderColor='var(--border)'"><i class="fas fa-times"></i> Clear History</button>
+    </div>
+
+    <div id="loader" class="loader" style="display:none;">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <defs>
+          <mask id="clipping">
+            <polygon points="0,0 100,0 100,100 0,100" fill="black"></polygon>
+            <polygon points="25,25 75,25 50,75" fill="white"></polygon>
+            <polygon points="50,25 75,75 25,75" fill="white"></polygon>
+            <polygon points="35,35 65,35 50,65" fill="white"></polygon>
+            <polygon points="35,35 65,35 50,65" fill="white"></polygon>
+            <polygon points="35,35 65,35 50,65" fill="white"></polygon>
+            <polygon points="35,35 65,35 50,65" fill="white"></polygon>
+          </mask>
+        </defs>
+      </svg>
+      <div class="box"></div>
+    </div>
+
+    <section id="suggestion" class="suggestion" style="display:none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="margin: 0;"><i class="fas fa-robot"></i> AI Recommendation</h2>
+        <button onclick="hideSuggestion()" style="background: transparent; border: none; font-size: 1.75rem; cursor: pointer; color: var(--muted); padding: 0; line-height: 1; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='transparent'"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="suggestionText"></div>
+    </section>
+
+    <section class="grid" id="moviesGrid"></section>
+
+    <div style="text-align: center; margin: 2rem 0;">
+      <button id="loadMoreBtn" onclick="loadMore()" style="display: none; padding: 0.75rem 2rem; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--accent-hover)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--accent)'; this.style.transform='translateY(0)'">
+        <i class="fas fa-plus-circle"></i> Load More Movies
+      </button>
+      
+      <!-- Inline loading indicator for Load More -->
+      <div id="loadMoreLoader" style="display: none; margin-top: 1rem;">
+        <div style="display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 2rem; background: var(--card); border-radius: 8px; border: 1px solid var(--border);">
+          <div style="width: 24px; height: 24px; border: 3px solid var(--border); border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <span style="color: var(--text); font-weight: 500;">Loading more movies...</span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <small><i class="fas fa-lightbulb"></i> Tip: Click "Suggest" to get AI-powered movie recommendations based on your preferences</small>
+    </footer>
+  </main>
+
+  <!-- Suggest Modal -->
+  <div id="suggestModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2><i class="fas fa-robot"></i> AI Movie Recommendation</h2>
+      <p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem;">
+        Describe what kind of movie you're in the mood for, and AI will suggest the perfect match!
+      </p>
+      <textarea 
+        id="prefsInput" 
+        placeholder="e.g., I want something mind-bending like Inception but more emotional"
+        rows="4"
+      >I like action and sci-fi with a fast pace</textarea>
+      <details style="margin: 0.5rem 0; font-size: 0.85rem; color: var(--muted);">
+        <summary style="cursor: pointer; user-select: none;"><i class="fas fa-lightbulb"></i> Need ideas?</summary>
+        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+          <li>Romantic comedy perfect for date night</li>
+          <li>Mind-bending psychological thriller</li>
+          <li>Feel-good family movie with great soundtrack</li>
+          <li>Dark drama with complex characters</li>
+          <li>Adventure movie with stunning visuals</li>
+        </ul>
+      </details>
+      <div class="modal-buttons">
+        <button onclick="getSuggestion()"><i class="fas fa-sparkles"></i> Get AI Suggestion</button>
+        <button onclick="closeSuggestModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movie Details Modal -->
+  <div id="movieModal" class="modal" style="display:none;">
+    <div class="modal-content modal-content-large">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0;"><i class="fas fa-film"></i> Movie Details</h2>
+        <button onclick="closeMovieModal()" style="background: transparent; border: none; font-size: 1.75rem; cursor: pointer; color: var(--muted); padding: 0; line-height: 1; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='transparent'"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="movieDetailsContent"></div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
