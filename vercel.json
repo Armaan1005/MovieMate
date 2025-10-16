@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ],
+  "env": {
+    "OMDB_API_KEY": "@omdb_api_key",
+    "GEMINI_API_KEY": "@gemini_api_key",
+    "GEMINI_MODEL": "gemini-2.0-flash-exp",
+    "PORT": "3000"
+  }
+}

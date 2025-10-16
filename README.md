@@ -161,6 +161,28 @@ Get detailed information about a specific movie.
 
 ## 🚀 Deployment
 
+### Deploy to Vercel (Recommended) ⚡
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Armaan1005/MovieMate)
+
+**One-Click Deploy:**
+1. Click the "Deploy with Vercel" button above
+2. Connect your GitHub account
+3. Add environment variables:
+   - `OMDB_API_KEY` - Your OMDb API key
+   - `GEMINI_API_KEY` - Your Google Gemini API key
+   - `GEMINI_MODEL` - `gemini-2.0-flash-exp`
+   - `PORT` - `3000`
+4. Click "Deploy"
+5. Your app will be live in minutes!
+
+**Manual Deploy:**
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run `vercel` in your project directory
+3. Follow the prompts to deploy
+4. Add environment variables in Vercel Dashboard
+5. Run `vercel --prod` to deploy to production
+
 ### Deploy to Render
 
 1. Push your code to GitHub
@@ -173,8 +195,8 @@ Get detailed information about a specific movie.
 
 ### Deploy to Railway
 
-1. Connect your GitHub repository
-2. Add environment variables
+1. Connect your GitHub repository at [Railway](https://railway.app)
+2. Add environment variables in the dashboard
 3. Railway will auto-detect and deploy
 
 ### Deploy to VPS
@@ -185,8 +207,8 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Clone and setup
-git clone https://github.com/yourusername/moviemate.git
-cd moviemate
+git clone https://github.com/Armaan1005/MovieMate.git
+cd MovieMate
 npm install
 
 # Use PM2 for process management
