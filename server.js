@@ -340,10 +340,19 @@ Provide a 2-3 sentence enthusiastic explanation of why this movie fits their pre
 
     const explanationResponse = await fetch(geminiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json' 
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: explanationPrompt }] }],
-        generationConfig: { temperature: 0.9, maxOutputTokens: 150 }
+        contents: [{
+          parts: [{
+            text: explanationPrompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.9,
+          maxOutputTokens: 150
+        }
       })
     });
     
