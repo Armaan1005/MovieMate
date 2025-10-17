@@ -253,52 +253,37 @@ Do not include any explanation, just the title and year.`;
 
     console.log(`🤖 Asking Gemini for suggestion based on: "${prefs}"`);
 
-    // Using Gemini model - try experimental first, fallback to stable
-    let model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
-    
-    // Fallback to stable model if experimental not available
-    const stableModel = 'gemini-1.5-pro'; // Using gemini-1.5-pro as stable fallback
+    // Using Gemini 2.0 Flash (latest, fastest model)
+    const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`;
     
     console.log(`📡 Using model: ${model}`);
     
-    const makeGeminiRequest = async (modelName) => {
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_KEY}`;
-      return await fetch(geminiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 20,
-            topP: 0.8,
-            maxOutputTokens: 50,
-          }
-        })
-      });
-    };
-    
-    let geminiResponse = await makeGeminiRequest(model);
-    
-    // If experimental model fails, try stable model
-    if (!geminiResponse.ok && model !== stableModel) {
-      console.log(`⚠️  Model ${model} failed, trying ${stableModel}...`);
-      model = stableModel;
-      geminiResponse = await makeGeminiRequest(model);
-    }
+    const geminiResponse = await fetch(geminiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 20,
+          topP: 0.8,
+          maxOutputTokens: 50,
+        }
+      })
+    });
     
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
       console.error('❌ Gemini API error:', geminiResponse.status, errorText);
       return res.status(500).json({ 
-        error: `Gemini API error: ${geminiResponse.status}. Check your API key at https://ai.google.dev/`,
-        details: errorText
+        error: `Gemini API error: ${geminiResponse.status}. Check your API key at https://ai.google.dev/`
       });
     }
 
@@ -353,8 +338,7 @@ Movie details: ${movieData.genre} | ${movieData.director} | ${movieData.plot}
 
 Provide a 2-3 sentence enthusiastic explanation of why this movie fits their preferences.`;
 
-    const explanationGeminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`;
-    const explanationResponse = await fetch(explanationGeminiUrl, {
+    const explanationResponse = await fetch(geminiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -407,14 +391,17 @@ app.post('/api/filter', async (req, res) => {
     // Ask Gemini for top-rated modern movies in the genre
     const prompt = `List exactly 12 highly-rated, critically acclaimed ${genre} movies released after 2000. 
 Focus on movies that are:
-- IMDb rating 7.5 or higher
+- IMDb rating 6.5 or higher
 - Released between 2000-2024
-- Well-known and widely available
+- Well-known and widely available on streaming
+- Popular mainstream films (NOT obscure indie films)
+- Movies that definitely have posters and full info on IMDb
 - Diverse in style and themes
 ${page > 1 ? `\nIMPORTANT: Skip the first ${(page - 1) * 12} most popular movies and give me the next 12 different ones.` : ''}
 
 Format: Movie Title (Year)
-One movie per line. No explanations, just title and year.`;
+One movie per line. No explanations, just title and year.
+Examples: Inception (2010), The Dark Knight (2008)`;
 
     const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`;
@@ -458,7 +445,8 @@ One movie per line. No explanations, just title and year.`;
         
         if (data.Response === 'True' && data.Poster && data.Poster !== 'N/A') {
           const rating = parseFloat(data.imdbRating);
-          if (!isNaN(rating) && rating >= 7.0) {
+          // Lower threshold to 6.5 to get more results
+          if (!isNaN(rating) && rating >= 6.5) {
             return {
               id: data.imdbID,
               title: data.Title,
@@ -467,10 +455,14 @@ One movie per line. No explanations, just title and year.`;
               overview: data.Plot !== 'N/A' ? data.Plot : '',
               rating: rating
             };
+          } else {
+            console.log(`⚠️ ${title} - Rating too low: ${rating}`);
           }
+        } else {
+          console.log(`⚠️ ${title} - No poster or not found in OMDb`);
         }
       } catch (err) {
-        console.error(`Failed to fetch: ${title}`, err.message);
+        console.error(`❌ Failed to fetch: ${title}`, err.message);
       }
       return null;
     });
