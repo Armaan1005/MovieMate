@@ -3,7 +3,6 @@
 AI-powered movie discovery app with smart recommendations, trending content, and advanced filters using OMDb API and Google Gemini.
 
 ![MovieMate](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)
 
 ## ✨ Features
@@ -21,8 +20,14 @@ AI-powered movie discovery app with smart recommendations, trending content, and
 ## Home Screen
 <img width="1901" height="1079" alt="image" src="https://github.com/user-attachments/assets/e82b7aaa-5675-4c94-a858-32275846b22d" />
 
-## AI Reccomendation
+## Detailed Description
+<img width="1900" height="1079" alt="image" src="https://github.com/user-attachments/assets/c0978250-196e-4e74-bebc-47eeaa9a1285" />
+
+## AI Recommendation
 <img width="1902" height="1079" alt="image" src="https://github.com/user-attachments/assets/c9719874-aa36-4ff9-973a-deb784740ba2" />
+
+## Light Mode
+<img width="1894" height="1079" alt="image" src="https://github.com/user-attachments/assets/3cfb624d-b6f2-4624-8d15-c2947567ed61" />
 
 
 
