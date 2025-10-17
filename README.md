@@ -4,7 +4,6 @@ AI-powered movie discovery app with smart recommendations, trending content, and
 
 ![MovieMate](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)
-
 ## ✨ Features
 
 - 🔥 **Trending Movies** - Discover 72 curated movies from 23 popular franchises
@@ -196,41 +195,6 @@ Get detailed information about a specific movie.
 3. Follow the prompts to deploy
 4. Add environment variables in Vercel Dashboard
 5. Run `vercel --prod` to deploy to production
-
-### Deploy to Render
-
-1. Push your code to GitHub
-2. Create a new Web Service on [Render](https://render.com)
-3. Connect your repository
-4. Set the build command: `npm install`
-5. Set the start command: `npm start`
-6. Add environment variables (`OMDB_API_KEY`, `GEMINI_API_KEY`)
-7. Deploy!
-
-### Deploy to Railway
-
-1. Connect your GitHub repository at [Railway](https://railway.app)
-2. Add environment variables in the dashboard
-3. Railway will auto-detect and deploy
-
-### Deploy to VPS
-
-```bash
-# Install Node.js
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Clone and setup
-git clone https://github.com/Armaan1005/MovieMate.git
-cd MovieMate
-npm install
-
-# Use PM2 for process management
-npm install -g pm2
-pm2 start server.js --name moviemate
-pm2 startup
-pm2 save
-```
 
 ## 🤝 Contributing
 
