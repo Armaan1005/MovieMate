@@ -257,7 +257,7 @@ Do not include any explanation, just the title and year.`;
     let model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
     
     // Fallback to stable model if experimental not available
-    const stableModel = 'gemini-1.5-flash';
+    const stableModel = 'gemini-1.5-pro'; // Using gemini-1.5-pro as stable fallback
     
     console.log(`📡 Using model: ${model}`);
     
