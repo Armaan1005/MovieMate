@@ -241,9 +241,9 @@ app.post('/api/suggest', async (req, res) => {
 
     const prompt = `You are a movie recommendation expert. Based on these preferences: "${prefs}"
 
-${sampleMovies?.length > 0 ? `Current search results include: ${movieList}` : ''}
+${sampleMovies?.length > 0 ? `(For reference, user is currently browsing: ${movieList}. You can suggest ANY movie, not limited to these.)` : ''}
 
-Please suggest ONE specific movie that matches these preferences. 
+Please suggest ONE specific movie from your vast knowledge that best matches these preferences. 
 IMPORTANT: Respond with ONLY the movie title and year in this exact format:
 Movie Title (Year)
 
